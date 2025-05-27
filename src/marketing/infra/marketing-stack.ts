@@ -5,6 +5,7 @@ import { CreateRecommendationsConstruct } from "./construct/create-recommendatio
 import { DynamoDBTable } from "../../common/dynamodb";
 import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
 import { EventBus } from "../../common/event-bridge";
+import { QueryRecommendationsConstruct } from "./construct/query-recommendations";
 
 export class MarketingStack extends Stack {
 	constructor(scope: Construct, id: string) {
@@ -29,6 +30,11 @@ export class MarketingStack extends Stack {
 			"CreateRecommendationsConstruct",
 			{ table: businessIdeaTable, eventBus },
 		);
+
+		new QueryRecommendationsConstruct(this, "QueryRecommendationsConstruct", {
+			table: businessIdeaTable,
+		});
+
 		new CfnOutput(this, "CreateBusinessIdeaUrl", {
 			value: createBusinessIdeaConstruct.getApiGatewayUrl(),
 		});

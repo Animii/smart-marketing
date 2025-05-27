@@ -1,4 +1,4 @@
-import type { ChannelRecommendation } from "@/marketing/domain/entity/channel-recommendations";
+import type { ChannelRecommendation } from "../../domain/entity/channel-recommendations";
 import { BusinessIdea } from "../../domain/aggregat/business-idea";
 
 export class BusinessIdeaModel {
@@ -16,14 +16,14 @@ export class BusinessIdeaModel {
 		this.SK = `BUSINESS_IDEA-${this.id}`;
 	}
 
-	toDomain(): BusinessIdea {
-		return BusinessIdea.create(
-			this.id,
-			this.name,
-			this.url,
-			this.description,
-			this.channelRecommendations,
-		);
+	async toDomain(): Promise<BusinessIdea> {
+		return await BusinessIdea.create({
+			id: this.id,
+			name: this.name,
+			url: this.url,
+			description: this.description,
+			channelRecommendations: this.channelRecommendations,
+		});
 	}
 
 	static fromDomain(businessIdea: BusinessIdea): BusinessIdeaModel {

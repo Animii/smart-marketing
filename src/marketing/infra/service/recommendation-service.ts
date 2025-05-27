@@ -27,8 +27,6 @@ export class RecommendationService implements IRecommendationService {
 	private readonly MAX_CONTENT_LENGTH = 8000;
 	private readonly MAX_SUMMARY_LENGTH = 2000;
 
-	constructor(private readonly apiKey: string) {}
-
 	async recommend(
 		businessIdea: BusinessIdea,
 	): Promise<ChannelRecommendation[]> {

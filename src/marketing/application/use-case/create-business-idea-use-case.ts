@@ -12,13 +12,12 @@ export class CreateBusinessIdeaUseCase {
 	) {}
 
 	async execute(input: CreateBusinessIdeaUseCaseInput): Promise<BusinessIdea> {
-		const businessIdea = BusinessIdea.create(
-			randomUUID(),
-			input.name,
-			input.url,
-			input.description,
-			[],
-		);
+		const businessIdea = await BusinessIdea.create({
+			name: input.name,
+			url: input.url,
+			description: input.description,
+			channelRecommendations: [],
+		});
 		await this.businessIdeaRepository.save(businessIdea);
 
 		return businessIdea;

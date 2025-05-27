@@ -1,5 +1,5 @@
 import type { BusinessIdea } from "../aggregat/business-idea";
-import type { IEvent } from "@common/event-bridge/event";
+import type { IEvent } from "../../../common/event-bridge/event";
 
 export class BusinessIdeaCreatedEvent implements IEvent {
 	public readonly source: "marketing";

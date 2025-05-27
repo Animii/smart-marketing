@@ -2,6 +2,7 @@ import { AggregateRoot } from "../../../common/domain/aggregate";
 import { BusinessIdeaCreatedEvent } from "../event";
 import type { ChannelRecommendation } from "../entity/channel-recommendations";
 import { ChannelRecommendationsAddedEvent } from "../event/channel-recommendation-added-event";
+import { randomUUID } from "node:crypto";
 
 export class BusinessIdea extends AggregateRoot {
 	private constructor(
@@ -16,15 +17,21 @@ export class BusinessIdea extends AggregateRoot {
 		super(id);
 	}
 
-	static create(
-		id: string,
-		name: string,
-		url: string,
-		description: string,
-		channelRecommendations: ChannelRecommendation[],
-	) {
+	static async create({
+		id,
+		name,
+		url,
+		description,
+		channelRecommendations,
+	}: {
+		id?: string;
+		name: string;
+		url: string;
+		description: string;
+		channelRecommendations: ChannelRecommendation[];
+	}) {
 		const businessIdea = new BusinessIdea(
-			id,
+			id ?? randomUUID(),
 			name,
 			url,
 			description,
@@ -32,7 +39,9 @@ export class BusinessIdea extends AggregateRoot {
 			new Date(),
 			new Date(),
 		);
-		businessIdea.apply(BusinessIdeaCreatedEvent.create(businessIdea));
+		if (id == null) {
+			await businessIdea.apply(BusinessIdeaCreatedEvent.create(businessIdea));
+		}
 		return businessIdea;
 	}
 

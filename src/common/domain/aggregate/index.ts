@@ -1,5 +1,5 @@
-import type { IEvent } from "@/common/event-bridge/event";
-import type { EventBridgePublisher } from "@/common/event-bridge/publisher";
+import type { IEvent } from "../../event-bridge/event";
+import type { EventBridgePublisher } from "../../event-bridge/publisher";
 
 export const Context: {
 	publisher: EventBridgePublisher | undefined;

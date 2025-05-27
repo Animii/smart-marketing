@@ -1,4 +1,4 @@
-import type { IEvent } from "@common/event-bridge/event";
+import type { IEvent } from "../../../common/event-bridge/event";
 import type { ChannelRecommendation } from "../entity/channel-recommendations";
 import type { BusinessIdea } from "../aggregat/business-idea";
 

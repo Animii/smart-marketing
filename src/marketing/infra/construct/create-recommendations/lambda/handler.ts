@@ -65,9 +65,7 @@ const eventBridgePublisher = new EventBridgePublisher(
 
 Context.publisher = eventBridgePublisher;
 
-const recommendationService = new RecommendationService(
-	process.env.OPENAI_API_KEY as string,
-);
+const recommendationService = new RecommendationService();
 
 const businessIdeaRepository = new BusinessIdeaRepository(
 	new DynamoDBClient({
