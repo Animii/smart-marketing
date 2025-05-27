@@ -1,8 +1,10 @@
-import type { APIGatewayProxyEvent } from "aws-lambda";
+import type { APIGatewayProxyEvent, SQSEvent } from "aws-lambda";
 import { CreateRecommendationsUseCase } from "../../../../application/use-case/create-recommendations";
 import { RecommendationService } from "../../../service/recommendation-service";
 import { BusinessIdeaRepository } from "../../../repository/business-idea-repository";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { Context } from "../../../../../common/domain/aggregate";
+import { EventBridgePublisher } from "../../../../../common/event-bridge/publisher";
 const CORS_HEADERS = {
 	"Access-Control-Allow-Origin": "*",
 	"Access-Control-Allow-Headers":
@@ -14,22 +16,54 @@ export class CreateRecommendationsLambdaHandler {
 		private readonly createRecommendationsUseCase: CreateRecommendationsUseCase,
 	) {}
 
-	async handle(event: APIGatewayProxyEvent) {
-		const { businessIdeaId } = JSON.parse(event.body as string) as {
-			businessIdeaId: string;
-		};
+	async handle(event: SQSEvent) {
+		console.log("Received SQS event:", JSON.stringify(event, null, 2));
 
-		const recommendations = await this.createRecommendationsUseCase.execute({
-			businessIdeaId,
-		});
+		for (const record of event.Records) {
+			try {
+				// Parse the EventBridge event from SQS message body
+				const eventBridgeEvent = JSON.parse(record.body);
+				console.log(
+					"EventBridge event:",
+					JSON.stringify(eventBridgeEvent, null, 2),
+				);
+
+				// Extract the detail from the EventBridge event
+				const eventDetail = eventBridgeEvent.detail;
+				console.log("Event detail:", JSON.stringify(eventDetail, null, 2));
+
+				const businessIdeaId = eventDetail.businessIdeaId;
+				console.log("Processing business idea ID:", businessIdeaId);
+
+				const recommendations = await this.createRecommendationsUseCase.execute(
+					{
+						businessIdeaId,
+					},
+				);
+
+				console.log("Created recommendations:", recommendations);
+			} catch (error) {
+				console.error("Error processing SQS record:", error);
+				console.error("Record body:", record.body);
+				throw error;
+			}
+		}
 
 		return {
 			statusCode: 200,
-			body: JSON.stringify({ recommendations }),
+			body: JSON.stringify({
+				message: "Recommendations processed successfully",
+			}),
 			headers: CORS_HEADERS,
 		};
 	}
 }
+
+const eventBridgePublisher = new EventBridgePublisher(
+	process.env.EVENT_BUS_NAME as string,
+);
+
+Context.publisher = eventBridgePublisher;
 
 const recommendationService = new RecommendationService(
 	process.env.OPENAI_API_KEY as string,
@@ -50,6 +84,6 @@ const createRecommendationsUseCase = new CreateRecommendationsUseCase(
 const createRecommendationsLambdaHandler =
 	new CreateRecommendationsLambdaHandler(createRecommendationsUseCase);
 
-export const handler = async (event: APIGatewayProxyEvent) => {
+export const handler = async (event: SQSEvent) => {
 	return await createRecommendationsLambdaHandler.handle(event);
 };

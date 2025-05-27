@@ -13,7 +13,11 @@ export class BusinessIdeaRepository {
 		readonly client: DynamoDBClient,
 		readonly tableName: string,
 	) {
-		this.dynamodbDocumentClient = DynamoDBDocumentClient.from(client);
+		this.dynamodbDocumentClient = DynamoDBDocumentClient.from(client, {
+			marshallOptions: {
+				convertClassInstanceToMap: true,
+			},
+		});
 	}
 
 	async save(businessIdea: BusinessIdea): Promise<void> {
@@ -22,6 +26,7 @@ export class BusinessIdeaRepository {
 			businessIdea.name,
 			businessIdea.url,
 			businessIdea.description,
+			businessIdea.channelRecommendations,
 		);
 		console.log(model);
 
@@ -44,11 +49,12 @@ export class BusinessIdeaRepository {
 			return null;
 		}
 
-		return BusinessIdea.create(
+		return BusinessIdea.fromPersistence(
 			result.Item.id,
 			result.Item.name,
 			result.Item.url,
 			result.Item.description,
+			result.Item.channelRecommendations,
 		);
 	}
 }

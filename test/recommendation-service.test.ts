@@ -8,7 +8,6 @@ describe("RecommendationService", () => {
 	beforeEach(() => {
 		recommendationService = new RecommendationService(
 			process.env.OPENAI_API_KEY as string,
-			[TractionChannel.VIRAL_MARKETING, TractionChannel.PUBLIC_RELATIONS],
 		);
 	});
 

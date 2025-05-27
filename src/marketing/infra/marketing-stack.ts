@@ -4,10 +4,13 @@ import { CreateBusinessIdeaConstruct } from "./construct/create-business-idea";
 import { CreateRecommendationsConstruct } from "./construct/create-recommendations";
 import { DynamoDBTable } from "../../common/dynamodb";
 import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
+import { EventBus } from "../../common/event-bridge";
 
 export class MarketingStack extends Stack {
 	constructor(scope: Construct, id: string) {
 		super(scope, id);
+
+		const eventBus = new EventBus(this, "EventBus");
 
 		const businessIdeaTable = new DynamoDBTable(this, "BusinessIdeaTable", {
 			tableName: "BusinessIdeaTable",
@@ -18,13 +21,13 @@ export class MarketingStack extends Stack {
 		const createBusinessIdeaConstruct = new CreateBusinessIdeaConstruct(
 			this,
 			"CreateBusinessIdeaConstruct",
-			{ table: businessIdeaTable },
+			{ table: businessIdeaTable, eventBus },
 		);
 
 		const createRecommendationsConstruct = new CreateRecommendationsConstruct(
 			this,
 			"CreateRecommendationsConstruct",
-			{ table: businessIdeaTable },
+			{ table: businessIdeaTable, eventBus },
 		);
 		new CfnOutput(this, "CreateBusinessIdeaUrl", {
 			value: createBusinessIdeaConstruct.getApiGatewayUrl(),

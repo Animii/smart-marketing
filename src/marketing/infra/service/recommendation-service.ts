@@ -6,17 +6,17 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import {
 	TractionChannels,
+	TractionChannelValueObject,
 	type TractionChannel,
 } from "../../domain/value-object/traction-channel";
 
 const prompt = (
 	websiteContent: string,
-	channels: TractionChannel[],
+	channels: string[],
 ) => `Given the following business idea/website description: "${websiteContent}"
 
 
 Identify the top 3 marketing channels most likely to yield initial traction (inner circle),
-5 channels worth testing (potential), and 5 less promising channels (long shots).
 Briefly explain each recommendation and suggest content formats and necessary elements required to start effectively.
 Pick only from the following channels: ${channels.join(", ")}
 `;
@@ -65,16 +65,29 @@ export class RecommendationService implements IRecommendationService {
 						z.object({
 							channel: z.string(),
 							explanation: z.string(),
+							contentFormat: z.string(),
+							contentElements: z.array(z.string()),
 						}),
 					)
 					.length(3),
 			}),
-			prompt: prompt(websiteContentSummary, Array.from(TractionChannels)),
+			prompt: prompt(
+				websiteContentSummary,
+				TractionChannels.map((channel) => {
+					const valueObject = TractionChannelValueObject.create(channel);
+					return valueObject.toPrettyString();
+				}),
+			),
 			maxTokens: 2000,
 		});
 
 		return response.object.innerCircle.map((channel) => {
-			return ChannelRecommendation.create(channel.channel, channel.explanation);
+			return ChannelRecommendation.create(
+				channel.channel,
+				channel.explanation,
+				channel.contentFormat,
+				channel.contentElements,
+			);
 		});
 	}
 

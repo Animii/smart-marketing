@@ -22,6 +22,10 @@ export class CreateRecommendationsUseCase {
 		const recommendations =
 			await this.recommendationService.recommend(businessIdea);
 
+		businessIdea.addChannelRecommendation(recommendations);
+
+		await this.businessIdeaRepository.save(businessIdea);
+
 		return recommendations;
 	}
 }

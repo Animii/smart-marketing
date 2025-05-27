@@ -17,6 +17,7 @@ export class CreateBusinessIdeaUseCase {
 			input.name,
 			input.url,
 			input.description,
+			[],
 		);
 		await this.businessIdeaRepository.save(businessIdea);
 

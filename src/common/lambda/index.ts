@@ -10,6 +10,10 @@ const DEFAULT_PROPS: Partial<NodejsFunctionProps> = {
 	runtime: Runtime.NODEJS_20_X,
 	memorySize: 1024,
 	timeout: Duration.seconds(30),
+	bundling: {
+		minify: false,
+		sourceMap: true,
+	},
 };
 
 export class Lambda extends NodejsFunction {

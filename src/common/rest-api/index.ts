@@ -22,7 +22,11 @@ export class RestApi extends AwsRestApi {
 		super(scope, id, { ...DEFAULT_PROPS, ...props });
 	}
 
-	addLambdaIntegration(lambda: Lambda, path = "", method = "POST") {
+	addLambdaIntegration(
+		lambda: Lambda,
+		path = "",
+		method: "GET" | "POST" | "PUT" | "DELETE" = "POST",
+	) {
 		return this.root
 			.addResource(path)
 			.addMethod(method, new LambdaIntegration(lambda), {

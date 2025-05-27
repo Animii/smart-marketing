@@ -2,6 +2,8 @@ import type { APIGatewayProxyEvent } from "aws-lambda";
 import { CreateBusinessIdeaUseCase } from "../../../../application/use-case/create-business-idea-use-case";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { BusinessIdeaRepository } from "../../../repository/business-idea-repository";
+import { EventBridgePublisher } from "../../../../../common/event-bridge/publisher";
+import { Context } from "../../../../../common/domain/aggregate";
 const CORS_HEADERS = {
 	"Access-Control-Allow-Origin": "*", // Or a specific origin
 	"Access-Control-Allow-Headers":
@@ -40,6 +42,12 @@ const businessIdeaRepository = new BusinessIdeaRepository(
 	}),
 	process.env.BUSINESS_IDEA_TABLE_NAME as string,
 );
+
+const eventBridgePublisher = new EventBridgePublisher(
+	process.env.EVENT_BUS_NAME as string,
+);
+
+Context.publisher = eventBridgePublisher;
 
 const createBusinessIdeaUseCase = new CreateBusinessIdeaUseCase(
 	businessIdeaRepository,
