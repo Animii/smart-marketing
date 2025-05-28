@@ -26,8 +26,10 @@
     "@aws-sdk/client-eventbridge": "^3.817.0",
     "@aws-sdk/lib-dynamodb": "^3.817.0",
     "@types/aws-lambda": "^8.10.149",
+    "@types/puppeteer": "^7.0.4",
     "ai": "^4.3.16",
     "aws-cdk-lib": "2.190.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "puppeteer": "^24.9.0"
   }
 }
