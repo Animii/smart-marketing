@@ -4,7 +4,7 @@ import type { IBusinessIdeaRepository } from "../../domain/interface/i-business-
 export interface CreateBusinessIdeaUseCaseInput {
 	name: string;
 	url: string;
-	description: string;
+	description?: string;
 }
 export class CreateBusinessIdeaUseCase {
 	constructor(
@@ -15,7 +15,7 @@ export class CreateBusinessIdeaUseCase {
 		const businessIdea = await BusinessIdea.create({
 			name: input.name,
 			url: input.url,
-			description: input.description,
+			description: input.description ?? "",
 			channelRecommendations: [],
 		});
 		await this.businessIdeaRepository.save(businessIdea);
